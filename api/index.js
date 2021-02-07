@@ -1,4 +1,8 @@
+const { exec } = require('child_process')
+
 const path = require('path')
+const cd = (...p) => path.join(__dirname, path.join(...p))
+
 const { v4: uuidv4 } = require('uuid')
 
 const express = require('express')
@@ -21,7 +25,11 @@ app.get('/', (req, res) => {
 })
 
 app.post('/upload', uploader.single('file'), (req, res) => {
-  res.json({ file: req.file })
+  const file = req.file
+  const cmd = `py ${cd('lib/mouth_detection.py')} ${cd('../', file.path)}`
+  exec(cmd, (err, stdout, stderr) => {
+    res.json({ file, result: JSON.parse(stdout) })
+  })
 })
 
 module.exports = {
