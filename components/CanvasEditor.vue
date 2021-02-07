@@ -99,24 +99,29 @@ export default {
         const preset = [image, 0, 0, image.width, image.height]
         this.ctx.drawImage(...preset, this.left, this.top, w, h)
 
-        this.test()
+        this.setPacifier()
       })
 
       image.src = this.src
     },
-    test() {
-      this.model.result.forEach(frame => {
-        let [left, top, width, height] = frame
+    setPacifier() {
+      const image = new Image()
 
-        left = (left * this.scale) + this.left
-        top = (top * this.scale) + this.top
-        width *= this.scale
-        height *= this.scale
+      image.addEventListener('load', e => {
+        this.model.result.forEach(coordinate => {
+          let [left, top, width, height] = coordinate
 
-        this.ctx.lineWidth = 1
-        this.ctx.strokeStyle = "rgb(0, 0, 255)"
-        this.ctx.strokeRect(left, top, width, height)
+          left = (left * this.scale) + this.left
+          top = (top * this.scale) + this.top
+          width *= this.scale
+          height *= this.scale
+
+          const preset = [image, 0, 0, image.width, image.height]
+          this.ctx.drawImage(...preset, left, top, width, height)
+        })
       })
+
+      image.src = require('~~/assets/images/pacifier.png')
     }
   },
   watch: {
