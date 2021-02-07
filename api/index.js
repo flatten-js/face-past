@@ -28,7 +28,7 @@ app.post('/upload', uploader.single('file'), (req, res) => {
   const file = req.file
   const cmd = `py ${cd('lib/mouth_detection.py')} ${cd('../', file.path)}`
   exec(cmd, (err, stdout, stderr) => {
-    res.json({ file, result: JSON.parse(stdout) })
+    res.json({ file, model: JSON.parse(stdout) })
   })
 })
 

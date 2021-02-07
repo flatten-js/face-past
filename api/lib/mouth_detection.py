@@ -13,7 +13,12 @@ image_file = cv2.imread(image_path, 0)
 cascade_file = cd("./haarcascades/haarcascade_mcs_mouth.xml")
 cascade = cv2.CascadeClassifier(cascade_file)
 
-mouth_list = cascade.detectMultiScale(image_file, 1.3, 5)
+for i in range(1,20):
+    min = i * 5
+    mouth_list = cascade.detectMultiScale(image_file, scaleFactor=1.11, minNeighbors=3, minSize=(min,min))
+
+    if len(mouth_list) == 1:
+        break
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -21,4 +26,4 @@ class NumpyEncoder(json.JSONEncoder):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
 
-print(json.dumps({ "data": mouth_list }, cls=NumpyEncoder))
+print(json.dumps({ "result": mouth_list }, cls=NumpyEncoder))
