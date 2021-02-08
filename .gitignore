@@ -91,3 +91,6 @@ sw.*
 
 # upload images
 static/images/
+
+# Sample cascade classifier
+api/lib/haarcascades/sample/

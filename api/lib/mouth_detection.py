@@ -10,7 +10,7 @@ def cd(*path):
 image_path = repr(sys.argv[1])[1:-1]
 image_file = cv2.imread(image_path, 0)
 
-cascade_file = cd("./haarcascades/haarcascade_mcs_mouth.xml")
+cascade_file = cd("./haarcascades/p593-n708.xml")
 cascade = cv2.CascadeClassifier(cascade_file)
 
 for i in range(1,20):
