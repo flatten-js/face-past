@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'to-baby',
+    title: 'little-girl-return',
     htmlAttrs: {
       lang: 'en'
     },
