@@ -7,12 +7,21 @@
       </b-col>
     </b-row>
 
-    <b-row class="flex-fill">
+    <b-row class="flex-fill mb-4">
       <b-col>
-        <canvas-editor :src="file.filename | convertImagePath" :model="model" />
+        <canvas-editor
+          :src="file.filename | convertImagePath"
+          :model="model"
+          :debug="debug"
+        />
       </b-col>
     </b-row>
 
+    <b-row>
+      <b-col class="text-right">
+        <b-form-checkbox v-model="debug">Debug</b-form-checkbox>
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 
@@ -36,7 +45,8 @@ export default {
         addRemoveLinks: true
       },
       file: {},
-      model: {}
+      model: {},
+      debug: false
     }
   },
   methods: {

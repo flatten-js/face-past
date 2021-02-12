@@ -1,16 +1,6 @@
 <template>
-  <canvas id="canvas-editor" class="w-100 h-100" />
+  <canvas id="canvas-editor" />
 </template>
-
-<style scoped>
-canvas[width] {
-  width: auto !important;
-}
-
-canvas[height] {
-  height: auto !important;
-}
-</style>
 
 <script>
 export default {
@@ -22,6 +12,10 @@ export default {
     model: {
       type: Object,
       default: () => ({})
+    },
+    debug: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -66,9 +60,12 @@ export default {
       const parent = this.$el.parentNode
       const padding = this.utils_padding(parent)
 
+      // ToDo: investigation to determine the cause (of)
+      const spacing = 6
+
       return {
         width: this.$el.width = parent.clientWidth - padding.width,
-        height: this.$el.height = parent.clientHeight - padding.height
+        height: this.$el.height = parent.clientHeight - padding.height - spacing
       }
     },
     load() {
@@ -99,25 +96,41 @@ export default {
         const preset = [image, 0, 0, image.width, image.height]
         this.ctx.drawImage(...preset, this.left, this.top, w, h)
 
-        this.setPacifier()
+        if (this.debug) {
+          this.setFrame()
+        } else {
+          this.setPacifier()
+        }
       })
 
       image.src = this.src
+    },
+    setHelper_(cb) {
+      this.model.result.forEach(coordinate => {
+        let [left, top, width, height] = coordinate
+
+        left = (left * this.scale) + this.left
+        top = (top * this.scale) + this.top
+        width *= this.scale
+        height *= this.scale
+
+        cb([left, top, width, height])
+      })
+    },
+    setFrame() {
+      this.setHelper_(coordinate => {
+        this.ctx.lineWidth = 1
+        this.ctx.strokeStyle = "rgb(0, 0, 255)"
+        this.ctx.strokeRect(...coordinate)
+      })
     },
     setPacifier() {
       const image = new Image()
 
       image.addEventListener('load', e => {
-        this.model.result.forEach(coordinate => {
-          let [left, top, width, height] = coordinate
-
-          left = (left * this.scale) + this.left
-          top = (top * this.scale) + this.top
-          width *= this.scale
-          height *= this.scale
-
+        this.setHelper_(coordinate => {
           const preset = [image, 0, 0, image.width, image.height]
-          this.ctx.drawImage(...preset, left, top, width, height)
+          this.ctx.drawImage(...preset, ...coordinate)
         })
       })
 
@@ -126,7 +139,10 @@ export default {
   },
   watch: {
     src() {
-      this.load()
+      this.rerender()
+    },
+    debug() {
+      this.rerender()
     }
   }
 }
