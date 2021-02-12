@@ -26,6 +26,15 @@ export default {
       top: 0
     }
   },
+  created() {
+    this.$watch(
+      () => [this.src, this.debug],
+      () => {
+        if (!this.src) return
+        this.rerender()
+      }
+    )
+  },
   mounted() {
     this.init()
   },
@@ -45,7 +54,7 @@ export default {
     },
     rerender() {
       this.clear()
-      this.load()
+      this.render()
     },
     clear() {
       this.ctx.clearRect(0, 0, this.$el.width, this.$el.height)
@@ -68,18 +77,20 @@ export default {
         height: this.$el.height = parent.clientHeight - padding.height - spacing
       }
     },
-    load() {
+    load(src, cb) {
+      const image = new Image()
+      image.addEventListener('load', e => cb(image))
+      image.src = src
+    },
+    render() {
       const { width, height } = this.resize()
 
-      const image = new Image()
-
-      image.addEventListener('load', e => {
+      this.load(this.src, image => {
+        this.scale = Math.min(width / image.width, height / image.height)
         const aspect = {
           canvas: width / height,
           image: image.width / image.height
         }
-
-        this.scale = Math.min(width / image.width, height / image.height)
 
         let w, h; w = h = 0
 
@@ -102,8 +113,6 @@ export default {
           this.setPacifier()
         }
       })
-
-      image.src = this.src
     },
     setHelper_(cb) {
       this.model.result.forEach(coordinate => {
@@ -125,24 +134,12 @@ export default {
       })
     },
     setPacifier() {
-      const image = new Image()
-
-      image.addEventListener('load', e => {
+      this.load(require('~~/assets/images/pacifier.png'), image => {
         this.setHelper_(coordinate => {
           const preset = [image, 0, 0, image.width, image.height]
           this.ctx.drawImage(...preset, ...coordinate)
         })
       })
-
-      image.src = require('~~/assets/images/pacifier.png')
-    }
-  },
-  watch: {
-    src() {
-      this.rerender()
-    },
-    debug() {
-      this.rerender()
     }
   }
 }

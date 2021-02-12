@@ -10,7 +10,7 @@
     <b-row class="flex-fill mb-4">
       <b-col>
         <canvas-editor
-          :src="file.filename | convertImagePath"
+          :src="convertImagePath"
           :model="model"
           :debug="debug"
         />
@@ -30,11 +30,6 @@ import Dropzone from '~~/components/Dropzone.vue'
 import CanvasEditor from '~~/components/CanvasEditor.vue'
 
 export default {
-  filters: {
-    convertImagePath(name) {
-      return `/images/${name}`
-    }
-  },
   data() {
     return {
       options_: {
@@ -56,6 +51,12 @@ export default {
         this.file = res.file
         this.model = res.model
       })
+    }
+  },
+  computed: {
+    convertImagePath() {
+      const { filename } = this.file
+      return filename && `/images/${filename}`
     }
   }
 }
