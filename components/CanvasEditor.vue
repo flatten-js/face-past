@@ -21,9 +21,7 @@ export default {
   data() {
     return {
       ctx: null,
-      scale: 1,
-      left: 0,
-      top: 0
+      scale: 1
     }
   },
   created() {
@@ -59,8 +57,6 @@ export default {
     clear() {
       this.ctx.clearRect(0, 0, this.$el.width, this.$el.height)
       this.scale = 1
-      this.left = 0
-      this.top = 0
     },
     resize() {
       this.$el.width = null
@@ -73,8 +69,8 @@ export default {
       const spacing = 6
 
       return {
-        width: this.$el.width = parent.clientWidth - padding.width,
-        height: this.$el.height = parent.clientHeight - padding.height - spacing
+        width: parent.clientWidth - padding.width,
+        height: parent.clientHeight - padding.height - spacing
       }
     },
     load(src, cb) {
@@ -97,15 +93,16 @@ export default {
         if (aspect.image >= aspect.canvas) {
           w = width
           h = width / aspect.image
-          this.top = (height - h) / 2
         } else {
           w = height * aspect.image
           h = height
-          this.left = (width - w) / 2
         }
 
+        this.$el.width = w
+        this.$el.height = h
+
         const preset = [image, 0, 0, image.width, image.height]
-        this.ctx.drawImage(...preset, this.left, this.top, w, h)
+        this.ctx.drawImage(...preset, 0, 0, w, h)
 
         if (this.debug) {
           this.setFrame()
@@ -116,14 +113,8 @@ export default {
     },
     setHelper_(cb) {
       this.model.result.forEach(coordinate => {
-        let [left, top, width, height] = coordinate
-
-        left = (left * this.scale) + this.left
-        top = (top * this.scale) + this.top
-        width *= this.scale
-        height *= this.scale
-
-        cb([left, top, width, height])
+        coordinate = coordinate.map(x => x * this.scale)
+        cb(coordinate)
       })
     },
     setFrame() {

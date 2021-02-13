@@ -8,7 +8,7 @@
     </b-row>
 
     <b-row class="flex-fill mb-4">
-      <b-col>
+      <b-col class="d-flex justify-content-center align-items-center">
         <canvas-editor
           :src="convertImagePath"
           :model="model"
