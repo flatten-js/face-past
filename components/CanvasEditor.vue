@@ -65,12 +65,9 @@ export default {
       const parent = this.$el.parentNode
       const padding = this.utils_padding(parent)
 
-      // ToDo: investigation to determine the cause (of)
-      const spacing = 6
-
       return {
         width: parent.clientWidth - padding.width,
-        height: parent.clientHeight - padding.height - spacing
+        height: parent.clientHeight - padding.height
       }
     },
     load(src, cb) {

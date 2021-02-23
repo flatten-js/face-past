@@ -1,6 +1,5 @@
 import os
 import sys
-import numpy as np
 import json
 import cv2
 
@@ -8,22 +7,24 @@ def cd(*path):
     return os.path.join(os.path.dirname(__file__), *path)
 
 image_path = repr(sys.argv[1])[1:-1]
-image_file = cv2.imread(image_path, 0)
+image = cv2.imread(image_path, 0)
 
 cascade_file = cd("./haarcascades/p945-n1139.xml")
 cascade = cv2.CascadeClassifier(cascade_file)
 
-for i in range(1,20):
-    min = i * 5
-    mouth_list = cascade.detectMultiScale(image_file, scaleFactor=1.11, minNeighbors=3, minSize=(min,min))
+def detect_mouth(n=1, scope=(1, 20), radius=5):
+    def options(min):
+        return dict(scaleFactor=1.11, minNeighbors=3, minSize=(min, min))
 
-    if len(mouth_list) == 1:
-        break
+    for i in range(*scope):
+        min = i * radius
+        mouth_list = cascade.detectMultiScale(image, **options(min))
 
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
+        if len(mouth_list) == n:
+            break
 
-print(json.dumps({ "result": mouth_list }, cls=NumpyEncoder))
+    return mouth_list
+
+result = { "result": detect_mouth().tolist() }
+
+print(json.dumps(result))
