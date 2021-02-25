@@ -1,30 +1,22 @@
 import os
 import sys
 import json
-import cv2
+
+from mouth import Mouth
 
 def cd(*path):
     return os.path.join(os.path.dirname(__file__), *path)
 
-image_path = repr(sys.argv[1])[1:-1]
-image = cv2.imread(image_path, 0)
+def path_parse(path):
+    return repr(path)[1:-1]
 
-cascade_file = cd("./haarcascades/p945-n1139.xml")
-cascade = cv2.CascadeClassifier(cascade_file)
+image_path = path_parse(sys.argv[1])
 
-def detect_mouth(n=1, scope=(1, 20), radius=5):
-    def options(min):
-        return dict(scaleFactor=1.11, minNeighbors=3, minSize=(min, min))
+cascade_path = cd('haarcascades')
+face_path = cd(cascade_path, 'lbpcascade_animeface.xml')
+mouth_path = cd(cascade_path, 'p945-n1139.xml')
 
-    for i in range(*scope):
-        min = i * radius
-        mouth_list = cascade.detectMultiScale(image, **options(min))
+mouth = Mouth(cascade_face=face_path, cascade_mouth=mouth_path)
+result = mouth.detect(image_path)
 
-        if len(mouth_list) == n:
-            break
-
-    return mouth_list
-
-result = { "result": detect_mouth().tolist() }
-
-print(json.dumps(result))
+print(json.dumps({ "result": result }))

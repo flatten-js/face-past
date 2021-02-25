@@ -92,5 +92,8 @@ sw.*
 # upload images
 static/images/
 
-# Sample cascade classifier
+# sample cascade
 api/lib/haarcascades/sample/
+
+# Python cache
+api/lib/__pycache__
