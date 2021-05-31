@@ -44,10 +44,22 @@ class Mouth:
 
         return output
 
+    def __adjust(self, face_coord, mouth_coord, rate=5.25):
+        mouth_size = face_coord[2] / rate
+
+        if mouth_size >= mouth_coord[2]:
+            mouth_coord[0] -= (mouth_size - mouth_coord[2]) / 2
+            mouth_coord[1] -= (mouth_size - mouth_coord[3]) / 2
+            mouth_coord[-2:] = [mouth_size] * 2
+
+        return mouth_coord
+
     def __restore(self, face_coord, mouth_coords):
         coords = []
 
         for mouth_coord in mouth_coords:
+            mouth_coord = self.__adjust(face_coord, mouth_coord)
+
             zip_coord = zip(face_coord[:2], mouth_coord[:2])
             x, y = list(map(lambda x: sum(x), zip_coord))
 
